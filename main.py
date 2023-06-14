@@ -11,20 +11,14 @@ if LOGGING:
     StreamHandler.terminator = '\r'
     getLogger().setLevel(INFO)
 
-def load_statuses():
-    info(f'█  Loading statuses')
-    start_time = time.time()
-    statuses = get_statuses()
-    info(f'✓  {"Loading statuses:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n\n')
-    return statuses
-
 def main():
-    # statuses = load_statuses()
     affinity_graph = AffinityGraph()
+
+    # affinity_graph.generate_graph()
+    # affinity_graph.save_graph(AFFINITY_GRAPH_FILENAME)
+
     affinity_graph.load_graph(AFFINITY_GRAPH_FILENAME)
     print(affinity_graph)
-    # affinity_graph.generate_graph(statuses)
-    # affinity_graph.save_graph(AFFINITY_GRAPH_FILENAME)
 
 if __name__ == "__main__":
     start_time = time.time()
