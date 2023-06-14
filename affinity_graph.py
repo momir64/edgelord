@@ -107,7 +107,7 @@ class AffinityGraph:
 
 
     def get_affinity(self, of_user, towards_user):
-        return self.__adjacency_matrix__[self.__name_to_index__[of_user], self.__name_to_index__[towards_user]]
+        return self.__adjacency_matrix__[self.__name_to_index__[of_user], self.__name_to_index__[towards_user]].item()
 
 
     def save_graph(self, filename):
