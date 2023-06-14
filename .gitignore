@@ -1,4 +1,3 @@
-/.vscode
 /affinity.graph
-/canvas
+/canvas/dataset
 /__pycache__
