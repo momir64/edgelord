@@ -39,8 +39,11 @@ def get_shares():
     return data.to_dict('records')
 
 
-def get_friends():
+def get_friends(only_names=False):
     data = pd.read_csv(f'{FOLDER_PATH}/{FRIENDS_PATH}', encoding='utf-8', converters={'friends': lambda x: x.split(';')})[['person', 'friends']]
-    data['index'] = data.index
-    data = data.set_index('person').to_dict('dict')
-    return len(data['index']), data['index'], data['friends']
+    if only_names:
+        return data.to_dict('list')['person']
+    else:
+        data['index'] = data.index
+        data = data.set_index('person').to_dict('dict')
+        return len(data['index']), data['index'], data['friends']
