@@ -102,7 +102,7 @@ class AffinityGraph:
         affinity_graph_original = self.__adjacency_matrix__.copy()
         self.__add_affinity_of_friends__(affinity_graph_original, friends)
 
-        # za uračunavanje i afiniteta prijatelja od prijatelja je potrebno ~50 minuta
+        # za uračunavanje i afiniteta prijatelja od prijatelja je potrebno ~50 minuta, a bez toga ~3 minuta za ceo original dataset
         # self.add_affinity_of_friends_friends(affinity_graph_original, friends)
 
 
