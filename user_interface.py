@@ -149,15 +149,15 @@ def print_status(index, statuses, underline_words):
                 line += word + ' '
         print_centered(underline(line, underline_words) + (' ' * (get_status_width() - len(line))), end='\n\n\n')
         print_centered('-' * get_status_width(), end='\n\n')
-        print_centered((f'👍 {str(status["likes"])   .ljust(5)}' +
-                       f'❤️  {str(status["loves"])   .ljust(6)}' +
-                        f'😆 {str(status["hahas"])   .ljust(5)}' +
-                        f'😮 {str(status["wows"])    .ljust(5)}' +
-                        f'😢 {str(status["sads"])    .ljust(5)}' +
-                        f'😠 {str(status["angrys"])  .ljust(5)}' +
-                        f'🐸 {str(status["special"]) .ljust(5)}').ljust(50) +
-                       (f'💬 {str(status["comments"]).ljust(5)}' +
-                        f'🔗 {str(status["shares"])  .ljust(5)}').rjust(get_status_width() - 60), offset=7)
+        print_centered((f' 👍 {str(status["likes"])   .ljust(4)}' +
+                       f' ❤️  {str(status["loves"])   .ljust(5)}' +
+                        f' 😆 {str(status["hahas"])   .ljust(4)}' +
+                        f' 😮 {str(status["wows"])    .ljust(4)}' +
+                        f' 😢 {str(status["sads"])    .ljust(4)}' +
+                        f' 😠 {str(status["angrys"])  .ljust(4)}' +
+                        f' 🐸 {str(status["special"]) .ljust(4)}').ljust(50) +
+                       (f' 💬 {str(status["comments"]).ljust(4)}' +
+                        f' 🔗 {str(status["shares"])  .ljust(4)}').rjust(get_status_width() - 60), offset=7)
     hide_cursor()
 
 def print_welcome_menu(option, *_):
