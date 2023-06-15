@@ -13,10 +13,10 @@ DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 def get_statuses(as_list=False):
-    data = pd.read_csv(f'{FOLDER_PATH}/{STATUSES_PATH}', encoding='utf-8', index_col=None if as_list else 0, parse_dates=['status_published'], date_format=DATETIME_FORMAT)
-    [['status_message', 'status_link', 'status_published', 'author', 'num_reactions', 'num_comments', 'num_shares',
-      'num_likes', 'num_loves', 'num_wows', 'num_hahas', 'num_sads', 'num_angrys', 'num_special']]
-    data.rename(columns={'status_message': 'message', 'status_link': 'link', 'status_published': 'date', 'num_reactions': 'reactions', 'num_comments': 'comments', 'num_shares': 'shares',
+    data = pd.read_csv(f'{FOLDER_PATH}/{STATUSES_PATH}', encoding='utf-8', index_col=None if as_list else 0, parse_dates=['status_published'], date_format=DATETIME_FORMAT)[[
+        'status_id' if as_list else 'author', 'status_message', 'status_link', 'status_published', 'author', 'num_reactions', 'num_comments',
+        'num_shares', 'num_likes', 'num_loves', 'num_wows', 'num_hahas', 'num_sads', 'num_angrys', 'num_special']]
+    data.rename(columns={'status_id': 'id', 'status_message': 'message', 'status_link': 'link', 'status_published': 'date', 'num_reactions': 'reactions', 'num_comments': 'comments', 'num_shares': 'shares',
                          'num_likes': 'likes', 'num_loves': 'loves', 'num_wows': 'wows', 'num_hahas': 'hahas', 'num_sads': 'sads', 'num_angrys': 'angrys', 'num_special': 'special'}, inplace=True)
     return data.to_dict('records' if as_list else 'index')
 
