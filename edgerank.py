@@ -32,5 +32,9 @@ def get_edgeranked_statuses(affinity_graph=None, user=None, statuses=None):
     return statuses
 
 
-def sort_edgeranked_statuses(statuses):
+def sort_by_edgerank(statuses):
     return sorted(statuses.values(), key=itemgetter('edgerank'), reverse=True)
+
+
+def sort_by_search_and_edgerank(statuses):
+    return sorted(statuses.values(), key=itemgetter('search', 'edgerank'), reverse=True)
