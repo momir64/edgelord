@@ -67,7 +67,7 @@ class StatusTrie:
         return node
 
 
-    def search(self, prompt):
+    def search(self, prompt, edgerank):
         statuses = {}
         prompt += '"' if prompt.count('"') % 2 else ''
         phrases = re.findall('"([^"]*)"', prompt)
@@ -82,7 +82,12 @@ class StatusTrie:
         for id in statuses_normal:
             statuses[id] = statuses.setdefault(id, 0) + statuses_normal[id]
 
-        return statuses, phrases + (prompt.split() if prompt != '' else [])
+        statuses_result = {}
+        for id, search_score in statuses.items():
+            edgerank[id]['search'] = search_score
+            statuses_result[id] = edgerank[id]
+            
+        return statuses_result, phrases + (prompt.split() if prompt != '' else [])
 
 
     def __search_normal__(self, prompt):
