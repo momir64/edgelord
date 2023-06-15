@@ -1,15 +1,22 @@
 import keyboard
 import shutil
 import time
-import re
 import os
 
 UNDERLINE_ON = '\x1B[1;3;4m'
 UNDERLINE_OFF = '\x1B[0m'
 
+def is_enclosed(text):
+    return text.count(UNDERLINE_ON) <= text.count(UNDERLINE_OFF)
 
 def underline_word(text, word):
-    return re.compile(rf"(?<![{UNDERLINE_ON}])({re.escape(word)})(?![{UNDERLINE_OFF}])", re.IGNORECASE).sub(rf"{UNDERLINE_ON}\1{UNDERLINE_OFF}", text)
+    position = 0
+    while text.lower().find(word.lower(), position) != -1:
+        position = text.lower().find(word.lower(), position)
+        if is_enclosed(text[:position]):
+            text = text[:position] + UNDERLINE_ON + text[position:position + len(word)] + UNDERLINE_OFF + text[position + len(word):]
+        position += len(UNDERLINE_ON + word + UNDERLINE_OFF)
+    return text
 
 def underline(text, words):
     for word in words:
@@ -159,7 +166,7 @@ def print_welcome_menu(option, *_):
 def print_app_menu(option, *_):
     print_menu(option, 'View feed', 'Search feed')
 
-def show_statuses(statuses, underline_words):
+def show_statuses(statuses, underline_words=[]):
     menu(print_status, statuses, underline_words)
 
 def welcome_menu():
