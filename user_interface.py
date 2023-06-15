@@ -90,6 +90,7 @@ def print_menu(selected, *args):
 def menu(print_menu, *data):
     selected = 1
     wait_release()
+    width = get_status_width()
     print_menu(selected, *data)
     while True:
         try:
@@ -110,6 +111,10 @@ def menu(print_menu, *data):
                 return None
             if keyboard.is_pressed('\n') or keyboard.is_pressed(' '):
                 return selected
+            if width != get_status_width():
+                print_menu(selected, *data)
+                width = get_status_width()
+                time.sleep(0.1)
         except:
             break
 
