@@ -12,11 +12,12 @@ AFFINITY_REDUCTION = 500
 WEIGHT_REDUCTION = 3000
 
 
-def get_edgeranked_statuses(affinity_graph=None, user=None):
-    info(f'█  Loading statuses')
-    start_time = time.time()
-    statuses = get_statuses(as_list=True)
-    info(f'✓  {"Loading statuses:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
+def get_edgeranked_statuses(affinity_graph=None, user=None, statuses=None):
+    if not statuses:
+        info(f'█  Loading statuses')
+        start_time = time.time()
+        statuses = get_statuses(as_list=True)
+        info(f'✓  {"Loading statuses:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
     info(f'█  Sorting statuses')
     start_time = time.time()
