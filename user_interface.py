@@ -68,11 +68,11 @@ def menu(print_menu, data=[0, 0]):
     while True:
         try:
             if keyboard.is_pressed('down') or keyboard.is_pressed('right'):
-                selected = min(selected + 1, len(data))
+                selected = min(selected + (10 if keyboard.is_pressed('shift') else 1), len(data))
                 print_menu(selected, data)
                 time.sleep(0.1)
             if keyboard.is_pressed('up') or keyboard.is_pressed('left'):
-                selected = max(selected - 1, 1)
+                selected = max(selected - (10 if keyboard.is_pressed('shift') else 1), 1)
                 print_menu(selected, data)
                 time.sleep(0.1)
             if keyboard.is_pressed('r') or keyboard.is_pressed('h') or keyboard.is_pressed('f5'):
