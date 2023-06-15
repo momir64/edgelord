@@ -12,15 +12,13 @@ AFFINITY_GRAPH_PATH = 'affinity.graph'
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-def get_statuses(as_list=False, as_list_and_dict=False):
-    data = pd.read_csv(f'{FOLDER_PATH}/{STATUSES_PATH}', encoding='utf-8', index_col=None if as_list or as_list_and_dict else 0, parse_dates=['status_published'], date_format=DATETIME_FORMAT)[[
-        'status_id' if as_list or as_list_and_dict else 'author', 'status_message', 'status_link', 'status_published', 'author', 'num_reactions', 'num_comments',
+def get_statuses():
+    data = pd.read_csv(f'{FOLDER_PATH}/{STATUSES_PATH}', encoding='utf-8', parse_dates=['status_published'], date_format=DATETIME_FORMAT)[[
+        'status_id', 'status_message', 'status_link', 'status_published', 'author', 'num_reactions', 'num_comments',
         'num_shares', 'num_likes', 'num_loves', 'num_wows', 'num_hahas', 'num_sads', 'num_angrys', 'num_special']]
     data.rename(columns={'status_id': 'id', 'status_message': 'message', 'status_link': 'link', 'status_published': 'date', 'num_reactions': 'reactions', 'num_comments': 'comments', 'num_shares': 'shares',
                          'num_likes': 'likes', 'num_loves': 'loves', 'num_wows': 'wows', 'num_hahas': 'hahas', 'num_sads': 'sads', 'num_angrys': 'angrys', 'num_special': 'special'}, inplace=True)
-    if as_list_and_dict:
-        return data.to_dict('records'), data.set_index('id').to_dict('index')
-    return data.to_dict('records' if as_list else 'index')
+    return data.set_index('id', drop=False).to_dict('index')
 
 
 def get_comments():
