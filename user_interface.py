@@ -3,7 +3,8 @@ import shutil
 import time
 import os
 
-STATUS_WIDTH = 80
+def get_status_width():
+    return max(72, shutil.get_terminal_size().columns // 2)
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -74,35 +75,65 @@ def menu(print_menu, data=[0, 0]):
                 selected = max(selected - 1, 1)
                 print_menu(selected, data)
                 time.sleep(0.1)
+            if keyboard.is_pressed('r') or keyboard.is_pressed('h') or keyboard.is_pressed('f5'):
+                selected = 1
+                print_menu(selected, data)
+                time.sleep(0.1)
             if keyboard.is_pressed('esc'):
                 cls()
                 return None
-            if keyboard.is_pressed('\n'):
+            if keyboard.is_pressed('\n') or keyboard.is_pressed(' '):
                 return selected
         except:
             break
 
+def print_empty_status():
+    print_centered('<' + '0/0'.center(get_status_width() - 2) + '>')
+    print_centered('-' * get_status_width(), end='\n\n\n')
+    print_centered('Publisher:   ...'.ljust(get_status_width()), end='\n')
+    print_centered('Published:   ...'.ljust(get_status_width()), end='\n\n')
+    print_centered('Link:        ...'.ljust(get_status_width()), end='\n\n')
+    print_centered('Message:     ...'.ljust(get_status_width()), end='\n\n')
+    print_centered('-' * get_status_width(), end='\n\n')
+    print_centered(('👍 0'.ljust(7) + '❤️  0'.ljust(9) + '😆 0'.ljust(7) + '😮 0'.ljust(7) + '😢 0'.ljust(7) + '😠 0'.ljust(7) + '🐸 0'.ljust(7)).ljust(50) +
+                   ('💬 0'.ljust(7) + '🔗 0'.ljust(7)).rjust(get_status_width() - 57), offset=4)
+
 def print_status(index, statuses):
     cls()
-    print('\n' * 3)
-    status = statuses[index - 1]
-    link = (status["link"][:STATUS_WIDTH - 9] + (status["link"][STATUS_WIDTH - 9:] and "...")) if status["link"] == status["link"] else ''
-    print_centered('<' + f'{index}/{len(statuses)}'.center(STATUS_WIDTH - 2) + '>')
-    print_centered('-' * STATUS_WIDTH, end='\n\n')
-    print_centered(f'Publisher: {status["author"]}'.ljust(STATUS_WIDTH), end='\n')
-    print_centered(f'Published: {status["date"]}'.ljust(STATUS_WIDTH), end='\n\n')
-    print_centered(f'Link: {link}'.ljust(STATUS_WIDTH), end='\n\n')
-    row_length = len('Message: ')
-    line = 'Message: '
-    for word in status['message'].split():
-        row_length += len(word) + 1
-        if row_length > STATUS_WIDTH:
-            print_centered(line.ljust(STATUS_WIDTH))
-            row_length = 0
-            line = ''
-        else:
-            line += word + ' '
-    print_centered(line.ljust(STATUS_WIDTH))
+    print('\n' * 2)
+    if not statuses:
+        print_empty_status()
+    else:
+        status = statuses[index - 1]
+        link = (status["link"][:get_status_width() - 9] + (status["link"][get_status_width() - 9:] and "...")) if status["link"] == status["link"] else ''
+        print_centered('<' + f'{index}/{len(statuses)}'.center(get_status_width() - 2) + '>')
+        print_centered('-' * get_status_width(), end='\n\n\n')
+        print_centered(f'Publisher: {status["author"]}'.ljust(get_status_width()), end='\n')
+        print_centered(f'Published: {status["date"]}'.ljust(get_status_width()), end='\n\n')
+        print_centered(f'Link: {link}'.ljust(get_status_width()), end='\n\n')
+        row_length = len('Message: ')
+        line = 'Message: '
+        for word in status['message'].split():
+            row_length += len(word) + 1
+            if row_length > get_status_width():
+                print_centered(line.ljust(get_status_width()))
+                printed = True
+                row_length = 0
+                line = ''
+            else:
+                line += word + ' '
+                printed = False
+        print_centered((line + (word if printed else '')).ljust(get_status_width()), end='\n\n\n')
+        print_centered('-' * get_status_width(), end='\n\n')
+        print_centered((f'👍 {str(status["likes"])   .ljust(5)}' +
+                       f'❤️  {str(status["loves"])   .ljust(6)}' +
+                        f'😆 {str(status["hahas"])   .ljust(5)}' +
+                        f'😮 {str(status["wows"])    .ljust(5)}' +
+                        f'😢 {str(status["sads"])    .ljust(5)}' +
+                        f'😠 {str(status["angrys"])  .ljust(5)}' +
+                        f'🐸 {str(status["special"]) .ljust(5)}').ljust(50) +
+                       (f'💬 {str(status["comments"]).ljust(5)}' +
+                        f'🔗 {str(status["shares"])  .ljust(5)}').rjust(get_status_width() - 60), offset=7)
     hide_cursor()
 
 def print_welcome_menu(option, _):
