@@ -103,6 +103,7 @@ def print_status(index, statuses):
         else:
             line += word + ' '
     print_centered(line.ljust(STATUS_WIDTH))
+    hide_cursor()
 
 def print_welcome_menu(option, _):
     print_menu(option, 'Be anonymous', 'Log In')
@@ -110,7 +111,7 @@ def print_welcome_menu(option, _):
 def print_app_menu(option, _):
     print_menu(option, 'View feed', 'Search feed')
 
-def show_feed(statuses):
+def show_statuses(statuses):
     menu(print_status, statuses)
 
 def welcome_menu():
