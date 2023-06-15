@@ -180,5 +180,5 @@ def welcome_menu():
 def app_menu():
     return menu(print_app_menu)
 
-def show_search(statuses):
+def show_search():
     pass
