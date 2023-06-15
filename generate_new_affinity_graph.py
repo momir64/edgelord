@@ -9,6 +9,7 @@ if LOGGING:
     StreamHandler.terminator = '\r'
     getLogger().setLevel(INFO)
 
+
 def main():
     affinity_graph = AffinityGraph()
     affinity_graph.generate_graph()
