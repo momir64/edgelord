@@ -1,7 +1,26 @@
 import keyboard
 import shutil
 import time
+import re
 import os
+
+UNDERLINE_ON = '\x1B[1;3;4m'
+UNDERLINE_OFF = '\x1B[0m'
+
+
+def underline_word(text, word):
+    return re.compile(rf"(?<![{UNDERLINE_ON}])({re.escape(word)})(?![{UNDERLINE_OFF}])", re.IGNORECASE).sub(rf"{UNDERLINE_ON}\1{UNDERLINE_OFF}", text)
+
+def underline(text, words):
+    for word in words:
+        text = underline_word(text, word)
+    return text
+
+def without_underline(text):
+    return text.replace(UNDERLINE_ON, '').replace(UNDERLINE_OFF, '')
+
+def without_underline_len(text):
+    return len(without_underline(text))
 
 def get_status_width():
     return max(72, shutil.get_terminal_size().columns // 2)
@@ -19,7 +38,7 @@ def print_vertical_space(offset=3):
     print('\n' * (shutil.get_terminal_size().lines // 2 - offset))
 
 def print_centered(text, offset=0, end=None):
-    print(' ' * ((shutil.get_terminal_size().columns - len(text) - offset) // 2) + text, end=end)
+    print(' ' * ((shutil.get_terminal_size().columns - without_underline_len(text) - offset) // 2) + text, end=end)
 
 def flush_input():
     try:
@@ -61,23 +80,23 @@ def print_menu(selected, *args):
         print_centered(('> ' if selected == i + 1 else '  ') + arg.ljust(15))
     hide_cursor()
 
-def menu(print_menu, data=[0, 0]):
+def menu(print_menu, *data):
     selected = 1
     wait_release()
-    print_menu(selected, data)
+    print_menu(selected, *data)
     while True:
         try:
             if keyboard.is_pressed('down') or keyboard.is_pressed('right'):
-                selected = min(selected + (10 if keyboard.is_pressed('shift') else 1), len(data))
-                print_menu(selected, data)
+                selected = min(selected + (10 if keyboard.is_pressed('shift') else 1), len(data[0]) if data else 2)
+                print_menu(selected, *data)
                 time.sleep(0.1)
             if keyboard.is_pressed('up') or keyboard.is_pressed('left'):
                 selected = max(selected - (10 if keyboard.is_pressed('shift') else 1), 1)
-                print_menu(selected, data)
+                print_menu(selected, *data)
                 time.sleep(0.1)
             if keyboard.is_pressed('r') or keyboard.is_pressed('h') or keyboard.is_pressed('f5'):
                 selected = 1
-                print_menu(selected, data)
+                print_menu(selected, *data)
                 time.sleep(0.1)
             if keyboard.is_pressed('esc'):
                 cls()
@@ -98,7 +117,7 @@ def print_empty_status():
     print_centered(('👍 0'.ljust(7) + '❤️  0'.ljust(9) + '😆 0'.ljust(7) + '😮 0'.ljust(7) + '😢 0'.ljust(7) + '😠 0'.ljust(7) + '🐸 0'.ljust(7)).ljust(50) +
                    ('💬 0'.ljust(7) + '🔗 0'.ljust(7)).rjust(get_status_width() - 57), offset=4)
 
-def print_status(index, statuses):
+def print_status(index, statuses, underline_words):
     cls()
     print('\n' * 2)
     if not statuses:
@@ -116,14 +135,12 @@ def print_status(index, statuses):
         for word in status['message'].split():
             row_length += len(word) + 1
             if row_length > get_status_width():
-                print_centered(line.ljust(get_status_width()))
-                printed = True
-                row_length = 0
-                line = ''
+                print_centered(underline(line, underline_words) + (' ' * (get_status_width() - len(line))))
+                row_length = len(word) + 1
+                line = word + ' '
             else:
                 line += word + ' '
-                printed = False
-        print_centered((line + (word if printed else '')).ljust(get_status_width()), end='\n\n\n')
+        print_centered(underline(line, underline_words) + (' ' * (get_status_width() - len(line))), end='\n\n\n')
         print_centered('-' * get_status_width(), end='\n\n')
         print_centered((f'👍 {str(status["likes"])   .ljust(5)}' +
                        f'❤️  {str(status["loves"])   .ljust(6)}' +
@@ -136,14 +153,14 @@ def print_status(index, statuses):
                         f'🔗 {str(status["shares"])  .ljust(5)}').rjust(get_status_width() - 60), offset=7)
     hide_cursor()
 
-def print_welcome_menu(option, _):
+def print_welcome_menu(option, *_):
     print_menu(option, 'Be anonymous', 'Log In')
 
-def print_app_menu(option, _):
+def print_app_menu(option, *_):
     print_menu(option, 'View feed', 'Search feed')
 
-def show_statuses(statuses):
-    menu(print_status, statuses)
+def show_statuses(statuses, underline_words):
+    menu(print_status, statuses, underline_words)
 
 def welcome_menu():
     return menu(print_welcome_menu)
