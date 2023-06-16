@@ -222,7 +222,7 @@ def show_search(trie):
     wait_release()
     print_vertical_space()
     print_centered('Search: ' + GRAY_ON + '_' + STYLE_OFF, 32, end='')
-    x, y = (get_console_width() - 29) // 2 + 1, shutil.get_terminal_size().lines // 2 - 1
+    x, y = (get_console_width() - 28) // 2, shutil.get_terminal_size().lines // 2 - 1
     position = 1
     option = 0
     char = ''
