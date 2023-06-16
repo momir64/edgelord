@@ -16,10 +16,10 @@ def main():
 
     while True:
         while True:
-            option = welcome_menu()
+            option = login_menu()
             if option == None:
                 exit()
-            user = None if option == 1 else login(users)
+            user = None if option == 1 else login_prompt(users)
             if user == None or user != '':
                 break
 
@@ -32,16 +32,16 @@ def main():
             elif option == 1:
                 show_statuses(sort_by_edgerank(statuses_edgerank))
             elif option == 2:
-                show_search(statuses_trie)
+                while True:
+                    search = show_search(statuses_trie)
+                    if search == None or search == '':
+                        break
+
+                    statuses_search, underline_words = statuses_trie.search(search, statuses_edgerank)
+                    show_statuses(sort_by_search_and_edgerank(statuses_search), underline_words)
 
 
 if __name__ == "__main__":
     start_time = time.time()
-
-    # search = '"donald j. trump" trump'
-    # suggestions = statuses_trie.get_suggestion('tru')
-    # statuses_search, underline_words = statuses_trie.search(search)
-    # show_statuses(sort_by_search_and_edgerank(statuses_sorted), underline_words)
-
     main()
     info('\033[K\nTotal:  %.4f seconds\n\n\n' % (time.time() - start_time))

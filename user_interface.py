@@ -3,6 +3,7 @@ import keyboard
 import shutil
 import time
 import os
+import re
 
 GRAY_ON = '\033[90m'
 STYLE_OFF = '\033[0m'
@@ -15,12 +16,19 @@ NUMBER_OF_SUGGESTIONS = 5
 def is_enclosed(text):
     return text.count(STYLE_ON) <= text.count(STYLE_OFF)
 
+def get_position(text, word, position):
+    return position + len(word) + len([c for c in text[position:text.lower().find(word.lower().split()[-1])] if not c.isalnum() and c != ' '])
+
 def underline_word(text, word):
     position = 0
-    while text.lower().find(word.lower(), position) != -1:
-        position = text.lower().find(word.lower(), position)
+    clean_position = 0
+    clean_text = re.sub(r'\s\s+', ' ', re.sub(r'[^\w\s]+', ' ', text)).strip().lower()
+    clean_word = re.sub(r'\s\s+', ' ', re.sub(r'[^\w\s]+', ' ', word)).strip().lower()
+    while clean_text.find(clean_word, clean_position) != -1:
+        clean_position = clean_text.find(clean_word, clean_position) + len(clean_word)
+        position = text.lower().find(word.lower().split()[0], position)
         if is_enclosed(text[:position]):
-            text = text[:position] + STYLE_ON + text[position:position + len(word)] + STYLE_OFF + text[position + len(word):]
+            text = text[:position] + STYLE_ON + text[position:get_position(text, word, position)] + STYLE_OFF + text[get_position(text, word, position):]
         position += len(STYLE_ON + word + STYLE_OFF)
     return text
 
@@ -73,7 +81,7 @@ def wait_release():
         except:
             break
 
-def login(users):
+def login_prompt(users):
     cls()
     flush_input()
     wait_release()
@@ -138,7 +146,7 @@ def print_empty_status():
 
 def print_status(index, statuses, underline_words):
     cls()
-    print('\n' * 2)
+    print('\n')
     if not statuses:
         print_empty_status()
     else:
@@ -181,7 +189,7 @@ def print_app_menu(option, *_):
 def show_statuses(statuses, underline_words=[]):
     menu(print_status, statuses, underline_words)
 
-def welcome_menu():
+def login_menu():
     return menu(print_welcome_menu)
 
 def app_menu():
@@ -218,6 +226,8 @@ def show_search(trie):
     print_centered('Search: ' + GRAY_ON + '_\b' + STYLE_OFF, 32, end='')
     x, y = (shutil.get_terminal_size().columns - 29) // 2, shutil.get_terminal_size().lines // 2 - 1
     char = getch()
+    if char == '\x1b':
+        return None
     position = 1
     text = char
     option = 0
@@ -255,5 +265,7 @@ def show_search(trie):
             text += sufix
             position = len(text)
             option = 0
+        elif char == '\x1b':
+            return None
 
     return text.strip()
