@@ -11,6 +11,7 @@ STYLE_ON = '\033[1;3;4m'
 UNDERLINE_ON = '\033[4m'
 CLEAR_TO_END = '\033[K'
 NUMBER_OF_SUGGESTIONS = 5
+MIN_STATUS_WIDTH = 75
 
 
 def is_enclosed(text):
@@ -43,8 +44,11 @@ def without_underline(text):
 def without_underline_len(text):
     return len(without_underline(text))
 
+def get_console_width():
+    return shutil.get_terminal_size().columns
+
 def get_status_width():
-    return max(72, shutil.get_terminal_size().columns // 2)
+    return max(MIN_STATUS_WIDTH, shutil.get_terminal_size().columns // 2)
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -55,11 +59,11 @@ def hide_cursor():
 def show_cursor():
     print('\033[?25h', end='')
 
-def print_vertical_space(offset=3):
-    print('\n' * (shutil.get_terminal_size().lines // 2 - offset))
+def print_vertical_space(offset=2):
+    print(f'\033[{shutil.get_terminal_size().lines // 2 - offset};0H')
 
 def print_centered(text, offset=0, end=None):
-    print(' ' * ((shutil.get_terminal_size().columns - without_underline_len(text) - offset) // 2) + text, end=end)
+    print(f'\r\033[{(get_console_width() - without_underline_len(text) - offset) // 2}C{text}', end=end)
 
 def flush_input():
     try:
@@ -105,7 +109,7 @@ def print_menu(selected, *args):
 def menu(print_menu, *data):
     selected = 1
     wait_release()
-    width = get_status_width()
+    width = get_console_width()
     print_menu(selected, *data)
     while True:
         try:
@@ -126,9 +130,9 @@ def menu(print_menu, *data):
                 return None
             if keyboard.is_pressed('\n') or keyboard.is_pressed(' '):
                 return selected
-            if width != get_status_width():
+            if width != get_console_width():
                 print_menu(selected, *data)
-                width = get_status_width()
+                width = get_console_width()
                 time.sleep(0.1)
         except:
             break
@@ -178,7 +182,7 @@ def print_status(index, statuses, underline_words):
                         f' 😠 {str(status["angrys"])  .ljust(4)}' +
                         f' 🐸 {str(status["special"]) .ljust(4)}').ljust(50) +
                        (f' 💬 {str(status["comments"]).ljust(4)}' +
-                        f' 🔗 {str(status["shares"])  .ljust(4)}').rjust(get_status_width() - 60), offset=7)
+                        f' 🔗 {str(status["shares"])  .ljust(4)}').rjust(get_status_width() - 60), offset=8)
 
 def print_welcome_menu(option, *_):
     print_menu(option, 'Be anonymous', 'Log In')
@@ -223,16 +227,14 @@ def show_search(trie):
     flush_input()
     wait_release()
     print_vertical_space()
-    print_centered('Search: ' + GRAY_ON + '_\b' + STYLE_OFF, 32, end='')
-    x, y = (shutil.get_terminal_size().columns - 29) // 2, shutil.get_terminal_size().lines // 2 - 1
-    char = getch()
-    if char == '\x1b':
-        return None
+    print_centered('Search: ' + GRAY_ON + '_' + STYLE_OFF, 32, end='')
+    x, y = (get_console_width() - 29) // 2 + 1, shutil.get_terminal_size().lines // 2 - 1
     position = 1
-    text = char
     option = 0
+    char = ''
+    text = ''
     while char != '\r' and char != '\n':
-        print(f'\033[{y};{x}H', end='')
+        print(f'\r\033[{y};{x}H', end='')
         if position < len(text):
             print(f'{text[:position] + UNDERLINE_ON + text[position] + STYLE_OFF+ text[position + 1:]}', end=CLEAR_TO_END)
         else:
@@ -241,6 +243,7 @@ def show_search(trie):
         option, sufix = print_sugestion(trie, text, x, y, option) if text and text[-1] != ' ' and text[-1] != '"' else (0, '')
         print(f'\033[{y};{x + position}H', end='')
 
+        print(f'\r\033[0;0H', end=CLEAR_TO_END)
         char = getch()
         if char == '\b' and text != '' and position:
             text = text[:position - 1] + text[position:]

@@ -18,6 +18,7 @@ def main():
         while True:
             option = login_menu()
             if option == None:
+                show_cursor()
                 exit()
             user = None if option == 1 else login_prompt(users)
             if user == None or user != '':
