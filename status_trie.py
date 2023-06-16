@@ -86,7 +86,7 @@ class StatusTrie:
         for id, search_score in statuses.items():
             edgerank[id]['search'] = search_score
             statuses_result[id] = edgerank[id]
-            
+
         return statuses_result, phrases + (prompt.split() if prompt != '' else [])
 
 
@@ -148,4 +148,4 @@ class StatusTrie:
         node = self.__get_node__(prefix)
         if node == None or node.char == '':
             return ''
-        return [t[0] for t in sorted(self.__dfs__(node), key=itemgetter(1), reverse=True)]
+        return [t[0] for t in sorted(self.__dfs__(node), key=itemgetter(1), reverse=True) if t[0] != prefix]
