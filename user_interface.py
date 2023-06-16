@@ -77,12 +77,9 @@ def flush_input():
 
 def wait_release():
     while True:
-        try:
-            if keyboard.is_pressed('\n') or keyboard.is_pressed('esc'):
-                time.sleep(0.1)
-            else:
-                break
-        except:
+        if keyboard.is_pressed('\n') or keyboard.is_pressed('esc'):
+            time.sleep(0.1)
+        else:
             break
 
 def login_prompt(users):
@@ -112,30 +109,27 @@ def menu(print_menu, *data):
     width = get_console_width()
     print_menu(selected, *data)
     while True:
-        try:
-            if keyboard.is_pressed('down') or keyboard.is_pressed('right'):
-                selected = min(selected + (10 if keyboard.is_pressed('shift') else 1), len(data[0]) if data else 2)
-                print_menu(selected, *data)
-                time.sleep(0.1)
-            if keyboard.is_pressed('up') or keyboard.is_pressed('left'):
-                selected = max(selected - (10 if keyboard.is_pressed('shift') else 1), 1)
-                print_menu(selected, *data)
-                time.sleep(0.1)
-            if keyboard.is_pressed('r') or keyboard.is_pressed('h') or keyboard.is_pressed('f5'):
-                selected = 1
-                print_menu(selected, *data)
-                time.sleep(0.1)
-            if keyboard.is_pressed('esc'):
-                cls()
-                return None
-            if keyboard.is_pressed('\n') or keyboard.is_pressed(' '):
-                return selected
-            if width != get_console_width():
-                print_menu(selected, *data)
-                width = get_console_width()
-                time.sleep(0.1)
-        except:
-            break
+        if keyboard.is_pressed('down') or keyboard.is_pressed('right'):
+            selected = min(selected + (10 if keyboard.is_pressed('shift') else 1), len(data[0]) if data else 2)
+            print_menu(selected, *data)
+            time.sleep(0.1)
+        if keyboard.is_pressed('up') or keyboard.is_pressed('left'):
+            selected = max(selected - (10 if keyboard.is_pressed('shift') else 1), 1)
+            print_menu(selected, *data)
+            time.sleep(0.1)
+        if keyboard.is_pressed('r') or keyboard.is_pressed('h') or keyboard.is_pressed('f5'):
+            selected = 1
+            print_menu(selected, *data)
+            time.sleep(0.1)
+        if keyboard.is_pressed('esc'):
+            cls()
+            return None
+        if keyboard.is_pressed('\n') or keyboard.is_pressed(' '):
+            return selected
+        if width != get_console_width():
+            print_menu(selected, *data)
+            width = get_console_width()
+            time.sleep(0.1)
 
 def print_empty_status():
     print_centered('<' + '0/0'.center(get_status_width() - 2) + '>')
