@@ -1,7 +1,6 @@
 from dataset_reader import AFFINITY_GRAPH_PATH, get_friends, get_statuses
 from affinity_graph import AffinityGraph
 from status_trie import StatusTrie
-from operator import itemgetter
 from user_interface import *
 from logging import info
 from edgerank import *
@@ -33,7 +32,7 @@ def main():
             elif option == 1:
                 show_statuses(sort_by_edgerank(statuses_edgerank))
             elif option == 2:
-                show_search()
+                show_search(statuses_trie)
 
 
 if __name__ == "__main__":

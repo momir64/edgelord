@@ -1,21 +1,27 @@
+from getch import getch
 import keyboard
 import shutil
 import time
 import os
 
-UNDERLINE_ON = '\x1B[1;3;4m'
-UNDERLINE_OFF = '\x1B[0m'
+GRAY_ON = '\033[90m'
+STYLE_OFF = '\033[0m'
+STYLE_ON = '\033[1;3;4m'
+UNDERLINE_ON = '\033[4m'
+CLEAR_TO_END = '\033[K'
+NUMBER_OF_SUGGESTIONS = 5
+
 
 def is_enclosed(text):
-    return text.count(UNDERLINE_ON) <= text.count(UNDERLINE_OFF)
+    return text.count(STYLE_ON) <= text.count(STYLE_OFF)
 
 def underline_word(text, word):
     position = 0
     while text.lower().find(word.lower(), position) != -1:
         position = text.lower().find(word.lower(), position)
         if is_enclosed(text[:position]):
-            text = text[:position] + UNDERLINE_ON + text[position:position + len(word)] + UNDERLINE_OFF + text[position + len(word):]
-        position += len(UNDERLINE_ON + word + UNDERLINE_OFF)
+            text = text[:position] + STYLE_ON + text[position:position + len(word)] + STYLE_OFF + text[position + len(word):]
+        position += len(STYLE_ON + word + STYLE_OFF)
     return text
 
 def underline(text, words):
@@ -24,7 +30,7 @@ def underline(text, words):
     return text
 
 def without_underline(text):
-    return text.replace(UNDERLINE_ON, '').replace(UNDERLINE_OFF, '')
+    return text.replace(STYLE_ON, '').replace(STYLE_OFF, '')
 
 def without_underline_len(text):
     return len(without_underline(text))
@@ -70,11 +76,12 @@ def wait_release():
 def login(users):
     cls()
     flush_input()
-    show_cursor()
     wait_release()
     print_vertical_space()
     print_centered('Name: ', 12, end='')
+    show_cursor()
     name = input()
+    hide_cursor()
     for user in users:
         if name.lower().strip() == user.lower().strip():
             return user
@@ -180,5 +187,73 @@ def welcome_menu():
 def app_menu():
     return menu(print_app_menu)
 
-def show_search():
-    pass
+def print_sugestion(trie, text, x, y, option=0):
+    sufix = ''
+    prefix = text.split()[-1].replace('"', '').lower()
+    words = trie.get_suggestion(prefix)
+    option = min(option, max(0, min(len(words), NUMBER_OF_SUGGESTIONS)))
+    if words:
+        if option:
+            sufix = words[option - 1][len(prefix):]
+            print(f'\033[{y};{x + len(text)}H', end='')
+            print(UNDERLINE_ON + GRAY_ON + sufix[0] + STYLE_OFF + GRAY_ON + sufix[1:] + STYLE_OFF, end=CLEAR_TO_END)
+
+        for i, word in enumerate(words[:NUMBER_OF_SUGGESTIONS]):
+            print(f'\033[{y + i + 1};{x}H', end='')
+            print(GRAY_ON + text + word[len(prefix):] + STYLE_OFF, end=CLEAR_TO_END)
+
+    return option, sufix
+
+def clear_sugestion(x, y):
+    for i in range(5):
+        print(f'\033[{y + i + 1};{x}H', end='')
+        print('', end=CLEAR_TO_END)
+
+def show_search(trie):
+    cls()
+    hide_cursor()
+    flush_input()
+    wait_release()
+    print_vertical_space()
+    print_centered('Search: ' + GRAY_ON + '_\b' + STYLE_OFF, 32, end='')
+    x, y = (shutil.get_terminal_size().columns - 29) // 2, shutil.get_terminal_size().lines // 2 - 1
+    char = getch()
+    position = 1
+    text = char
+    option = 0
+    while char != '\r' and char != '\n':
+        print(f'\033[{y};{x}H', end='')
+        if position < len(text):
+            print(f'{text[:position] + UNDERLINE_ON + text[position] + STYLE_OFF+ text[position + 1:]}', end=CLEAR_TO_END)
+        else:
+            print(f'{text}{GRAY_ON}_{STYLE_OFF}', end=CLEAR_TO_END)
+        clear_sugestion(x, y)
+        option, sufix = print_sugestion(trie, text, x, y, option) if text and text[-1] != ' ' and text[-1] != '"' else (0, '')
+        print(f'\033[{y};{x + position}H', end='')
+
+        char = getch()
+        if char == '\b' and text != '' and position:
+            text = text[:position - 1] + text[position:]
+            position = max(0, position - 1)
+        elif char == 'à':
+            char = getch()
+            if char == 'K':
+                position = max(0, position - 1)
+            elif char == 'M':
+                position = min(len(text), position + 1)
+            elif char == 'H':
+                option = max(0, option - 1)
+            elif char == 'P':
+                option += 1
+            elif char == 'S':
+                text = text[:position] + text[position + 1:]
+        elif char.isalnum() or char == ' ' or char == '"':
+            text = text[:position] + char + text[position:]
+            position += 1
+            option = 0
+        elif char == '\t':
+            text += sufix
+            position = len(text)
+            option = 0
+
+    return text.strip()
