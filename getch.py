@@ -13,12 +13,10 @@ def linux_getch():
 
 def windows_getch():
     import msvcrt
-    return msvcrt.getch()
+    return msvcrt.getwch()
 
-def get_getch():
+def getch():
     try:
         return windows_getch()
     except ImportError:
         return linux_getch()
-
-getch = get_getch()
