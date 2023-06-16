@@ -84,12 +84,12 @@ def wait_release():
 def login_prompt(users):
     cls()
     flush_input()
+    hide_cursor()
     wait_release()
     print_vertical_space()
     print_centered('Name: ', 12, end='')
     show_cursor()
     name = input()
-    hide_cursor()
     for user in users:
         if name.lower().strip() == user.lower().strip():
             return user
@@ -97,10 +97,10 @@ def login_prompt(users):
 
 def print_menu(selected, *args):
     cls()
+    hide_cursor()
     print_vertical_space()
     for i, arg in enumerate(args):
         print_centered(('> ' if selected == i + 1 else '  ') + arg.ljust(15))
-    hide_cursor()
 
 def menu(print_menu, *data):
     selected = 1
@@ -147,6 +147,7 @@ def print_empty_status():
 def print_status(index, statuses, underline_words):
     cls()
     print('\n')
+    hide_cursor()
     if not statuses:
         print_empty_status()
     else:
@@ -178,7 +179,6 @@ def print_status(index, statuses, underline_words):
                         f' 🐸 {str(status["special"]) .ljust(4)}').ljust(50) +
                        (f' 💬 {str(status["comments"]).ljust(4)}' +
                         f' 🔗 {str(status["shares"])  .ljust(4)}').rjust(get_status_width() - 60), offset=7)
-    hide_cursor()
 
 def print_welcome_menu(option, *_):
     print_menu(option, 'Be anonymous', 'Log In')
