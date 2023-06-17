@@ -172,8 +172,8 @@ def print_status(index, statuses, underline_words):
     print_centered(f'Publisher: {status["author"]}'.ljust(get_status_width()), end='\n')
     print_centered(f'Published: {status["date"]}'.ljust(get_status_width()), end='\n\n')
     print_centered(f'Link: {link}'.ljust(get_status_width()), end='\n\n')
-    row_length = len('Message: ')
     line = 'Message: '
+    row_length = len(line)
     for word in status['message'].split():
         row_length += len(word) + 1
         if row_length > get_status_width():
