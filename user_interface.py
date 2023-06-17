@@ -1,4 +1,4 @@
-from getch import getch
+from getch import *
 import keyboard
 import shutil
 import time
@@ -239,20 +239,22 @@ def show_search(trie):
 
         print(f'\r\033[0;0H', end=CLEAR_TO_END)
         char = getch()
-        if char == '\b' and text != '' and position:
+        if (char == '\b' or char == '\x7f') and text != '' and position:
             text = text[:position - 1] + text[position:]
             position = max(0, position - 1)
-        elif char == 'à':
+        elif char == 'à' or (isLinux and not keyboard.is_pressed('esc') and char == '\x1b'):
             char = getch()
-            if char == 'K':
+            if isLinux:
+                char = getch()
+            if char == 'K' or char == 'D':
                 position = max(0, position - 1)
-            elif char == 'M':
+            elif char == 'M' or char == 'C':
                 position = min(len(text), position + 1)
-            elif char == 'H':
+            elif char == 'H' or char == 'A':
                 option = max(0, option - 1)
-            elif char == 'P':
+            elif char == 'P' or char == 'B':
                 option += 1
-            elif char == 'S':
+            elif char == 'S' or (char == '3' and getch()):
                 text = text[:position] + text[position + 1:]
         elif char.isalnum() or char == ' ' or char == '"':
             text = text[:position] + char + text[position:]

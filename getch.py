@@ -1,7 +1,4 @@
 def linux_getch():
-    import sys
-    import tty
-    import termios
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
@@ -12,11 +9,20 @@ def linux_getch():
     return ch
 
 def windows_getch():
-    import msvcrt
     return msvcrt.getwch()
 
+isLinux = True
+
+try:
+    import sys
+    import tty
+    import termios
+except ImportError:
+    import msvcrt
+    isLinux = False
+
 def getch():
-    try:
-        return windows_getch()
-    except ImportError:
+    if isLinux:
         return linux_getch()
+    else:
+        return windows_getch()
