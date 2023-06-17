@@ -85,13 +85,10 @@ def print_centered(text, offset=0, end=None):
     print(f'\r\033[{(get_console_width() - without_underline_len(text) - offset) // 2}C{text}', end=end)
 
 def flush_input():
-    try:
-        import msvcrt
+    if isLinux:
         while msvcrt.kbhit():
             msvcrt.getch()
-    except ImportError:
-        import sys
-        import termios
+    else:
         termios.tcflush(sys.stdin, termios.TCIOFLUSH)
 
 def wait_release():
