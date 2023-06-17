@@ -164,35 +164,35 @@ def print_status(index, statuses, underline_words):
     hide_cursor()
     if not statuses:
         print_empty_status()
-    else:
-        status = statuses[index - 1]
-        link = (status["link"][:get_status_width() - 9] + (status["link"][get_status_width() - 9:] and "...")) if status["link"] == status["link"] else ''
-        print_centered('<' + f'{index}/{len(statuses)}'.center(get_status_width() - 2) + '>')
-        print_centered('-' * get_status_width(), end='\n\n\n')
-        print_centered(f'Publisher: {status["author"]}'.ljust(get_status_width()), end='\n')
-        print_centered(f'Published: {status["date"]}'.ljust(get_status_width()), end='\n\n')
-        print_centered(f'Link: {link}'.ljust(get_status_width()), end='\n\n')
-        row_length = len('Message: ')
-        line = 'Message: '
-        for word in status['message'].split():
-            row_length += len(word) + 1
-            if row_length > get_status_width():
-                print_centered(underline(line, underline_words) + (' ' * (get_status_width() - len(line))))
-                row_length = len(word) + 1
-                line = word + ' '
-            else:
-                line += word + ' '
-        print_centered(underline(line, underline_words) + (' ' * (get_status_width() - len(line))), end='\n\n\n')
-        print_centered('-' * get_status_width(), end='\n\n')
-        print_centered((f' 👍 {str(status["likes"])   .ljust(4)}' +
-                       f' ❤️  {str(status["loves"])   .ljust(5)}' +
-                        f' 😆 {str(status["hahas"])   .ljust(4)}' +
-                        f' 😮 {str(status["wows"])    .ljust(4)}' +
-                        f' 😢 {str(status["sads"])    .ljust(4)}' +
-                        f' 😠 {str(status["angrys"])  .ljust(4)}' +
-                        f' 🐸 {str(status["special"]) .ljust(4)}').ljust(50) +
-                       (f' 💬 {str(status["comments"]).ljust(4)}' +
-                        f' 🔗 {str(status["shares"])  .ljust(4)}').rjust(get_status_width() - 60), offset=8)
+        return
+    status = statuses[index - 1]
+    link = (status["link"][:get_status_width() - 9] + (status["link"][get_status_width() - 9:] and "...")) if status["link"] == status["link"] else ''
+    print_centered('<' + f'{index}/{len(statuses)}'.center(get_status_width() - 2) + '>')
+    print_centered('-' * get_status_width(), end='\n\n\n')
+    print_centered(f'Publisher: {status["author"]}'.ljust(get_status_width()), end='\n')
+    print_centered(f'Published: {status["date"]}'.ljust(get_status_width()), end='\n\n')
+    print_centered(f'Link: {link}'.ljust(get_status_width()), end='\n\n')
+    row_length = len('Message: ')
+    line = 'Message: '
+    for word in status['message'].split():
+        row_length += len(word) + 1
+        if row_length > get_status_width():
+            print_centered(underline(line, underline_words) + (' ' * (get_status_width() - len(line))))
+            row_length = len(word) + 1
+            line = word + ' '
+        else:
+            line += word + ' '
+    print_centered(underline(line, underline_words) + (' ' * (get_status_width() - len(line))), end='\n\n\n')
+    print_centered('-' * get_status_width(), end='\n\n')
+    print_centered((f' 👍 {str(status["likes"])   .ljust(4)}' +
+                   f' ❤️  {str(status["loves"])   .ljust(5)}' +
+                    f' 😆 {str(status["hahas"])   .ljust(4)}' +
+                    f' 😮 {str(status["wows"])    .ljust(4)}' +
+                    f' 😢 {str(status["sads"])    .ljust(4)}' +
+                    f' 😠 {str(status["angrys"])  .ljust(4)}' +
+                    f' 🐸 {str(status["special"]) .ljust(4)}').ljust(50) +
+                   (f' 💬 {str(status["comments"]).ljust(4)}' +
+                    f' 🔗 {str(status["shares"])  .ljust(4)}').rjust(get_status_width() - 60), offset=8)
 
 def print_welcome_menu(option, *_):
     print_menu(option, 'Be anonymous', 'Log In')
