@@ -86,10 +86,10 @@ def print_centered(text, offset=0, end=None):
 
 def flush_input():
     if isLinux:
+        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+    else:
         while msvcrt.kbhit():
             msvcrt.getch()
-    else:
-        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
 
 def wait_release():
     while True:
