@@ -1,5 +1,5 @@
+from pynput.keyboard import Listener
 from getch import *
-import keyboard
 import shutil
 import time
 import os
@@ -12,7 +12,26 @@ UNDERLINE_ON = '\033[4m'
 CLEAR_TO_END = '\033[K'
 NUMBER_OF_SUGGESTIONS = 5
 MIN_STATUS_WIDTH = 75
+IS_PRESSED = {}
 
+
+def on_press(key):
+    try:
+        IS_PRESSED[key.char] = True
+    except AttributeError:
+        IS_PRESSED[key.name if key.name != 'shift_r' else 'shift'] = True
+
+def on_release(key):
+    try:
+        IS_PRESSED[key.char] = False
+    except AttributeError:
+        IS_PRESSED[key.name if key.name != 'shift_r' else 'shift'] = False
+
+Listener(on_press=on_press, on_release=on_release).start()
+
+
+def is_pressed(key):
+    return IS_PRESSED.setdefault(key, False)
 
 def is_enclosed(text):
     return text.count(STYLE_ON) <= text.count(STYLE_OFF)
@@ -77,7 +96,7 @@ def flush_input():
 
 def wait_release():
     while True:
-        if keyboard.is_pressed('\n') or keyboard.is_pressed('esc'):
+        if is_pressed('enter') or is_pressed('esc'):
             time.sleep(0.1)
         else:
             break
@@ -109,22 +128,22 @@ def menu(print_menu, *data):
     width = get_console_width()
     print_menu(selected, *data)
     while True:
-        if keyboard.is_pressed('down') or keyboard.is_pressed('right'):
-            selected = min(selected + (10 if keyboard.is_pressed('shift') else 1), len(data[0]) if data else 2)
+        if is_pressed('down') or is_pressed('right'):
+            selected = min(selected + (10 if is_pressed('shift') else 1), len(data[0]) if data else 2)
             print_menu(selected, *data)
             time.sleep(0.1)
-        if keyboard.is_pressed('up') or keyboard.is_pressed('left'):
-            selected = max(selected - (10 if keyboard.is_pressed('shift') else 1), 1)
+        if is_pressed('up') or is_pressed('left'):
+            selected = max(selected - (10 if is_pressed('shift') else 1), 1)
             print_menu(selected, *data)
             time.sleep(0.1)
-        if keyboard.is_pressed('r') or keyboard.is_pressed('h') or keyboard.is_pressed('f5'):
+        if is_pressed('r') or is_pressed('h') or is_pressed('f5'):
             selected = 1
             print_menu(selected, *data)
             time.sleep(0.1)
-        if keyboard.is_pressed('esc'):
+        if is_pressed('esc'):
             cls()
             return None
-        if keyboard.is_pressed('\n') or keyboard.is_pressed(' '):
+        if is_pressed('enter') or is_pressed(' '):
             return selected
         if width != get_console_width():
             print_menu(selected, *data)
@@ -242,7 +261,7 @@ def show_search(trie):
         if (char == '\b' or char == '\x7f') and text != '' and position:
             text = text[:position - 1] + text[position:]
             position = max(0, position - 1)
-        elif char == 'à' or (isLinux and not keyboard.is_pressed('esc') and char == '\x1b'):
+        elif char == 'à' or (isLinux and not is_pressed('esc') and char == '\x1b'):
             char = getch()
             if isLinux:
                 char = getch()
