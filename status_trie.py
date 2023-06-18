@@ -144,7 +144,7 @@ class StatusTrie:
         return words
 
 
-    def get_suggestion(self, prefix):
+    def get_suggestions(self, prefix):
         node = self.__get_node__(prefix)
         if node == None or node.char == '':
             return ''

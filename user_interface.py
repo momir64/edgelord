@@ -212,7 +212,7 @@ def app_menu():
 def print_sugestion(trie, text, x, y, option=0):
     sufix = ''
     prefix = text.split()[-1].replace('"', '').lower()
-    words = trie.get_suggestion(prefix)
+    words = trie.get_suggestions(prefix)
     option = min(option, max(0, min(len(words), NUMBER_OF_SUGGESTIONS)))
     if words:
         if option:
