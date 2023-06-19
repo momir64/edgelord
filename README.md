@@ -23,9 +23,9 @@ Serijalizovani graf dostupan [ovde](https://edgelord.moma.rs/)
 Za original csv dataset na Intel i7-11700F (16 threads) procesoru:
 
 <pre>
-Bez uračunavanja prijateljevih sklonosti:                 <b>43.6752s</b>
-Sa uračunavanjem prijateljevih sklonosti:                 57.2433s
-Sa uračunavanjem sklonosti prijatelja od prijatelja:     442.4552s
+Bez uračunavanja prijateljevih sklonosti:                 <b>41.5433s</b>
+Sa uračunavanjem prijateljevih sklonosti:                 55.1114s
+Sa uračunavanjem sklonosti prijatelja od prijatelja:     440.3233s
 </pre>
 
 <pre>
@@ -43,6 +43,4 @@ Adding affinity for:
    Shares:                                                12.7199s
    Affinity of friends:                                   13.5681s
    Affinity of friends friends:                          385.2119s
-
-Total:  442.4552s
 </pre>
