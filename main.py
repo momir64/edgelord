@@ -2,9 +2,7 @@ from dataset_reader import AFFINITY_GRAPH_PATH, get_friends, get_statuses
 from affinity_graph import AffinityGraph
 from status_trie import StatusTrie
 from user_interface import *
-from logging import info
 from edgerank import *
-import time
 
 
 def main():
@@ -43,6 +41,4 @@ def main():
 
 
 if __name__ == "__main__":
-    start_time = time.time()
     main()
-    info('\033[K\nTotal:  %.4f seconds\n\n\n' % (time.time() - start_time))
