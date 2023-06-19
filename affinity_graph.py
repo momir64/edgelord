@@ -91,7 +91,7 @@ class AffinityGraph:
         start_time = time.time()
         info(f'█  {(activity_name + ":").ljust(32)}{"...parallel".rjust(20)}')
         parts = [(statuses, activites_part, activity_weight) for activites_part in np.array_split(activites, mp.cpu_count())]
-        results =  mp.Pool(mp.cpu_count()).starmap(self.__add_action_affinity_thread__, parts)
+        results = mp.Pool(mp.cpu_count()).starmap(self.__add_action_affinity_thread__, parts)
         self.__adjacency_matrix__ += np.sum(results, 0)
         info(f'✓  {(activity_name + ":").ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
