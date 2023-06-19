@@ -69,7 +69,7 @@ class AffinityGraph:
         info(f'█  Statuses')
         start_time = time.time()
         statuses = get_statuses()
-        info(f'✓  {"Statuses:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n\n')
+        info(f'✓  {"Statuses:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
         info(f'█  Friends')
         start_time = time.time()
