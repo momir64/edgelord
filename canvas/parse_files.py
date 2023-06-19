@@ -1,7 +1,7 @@
-from random import randint, random
 from datetime import datetime, timedelta
+from random import randint, random
 import time
-
+import re
 
 def load_comments(path):
     output_data = []
@@ -211,4 +211,11 @@ def adjust_date_time(statuses_path, comments_path, shares_path, reactions_path):
 
 if __name__ == '__main__':
     # adjust_date_time('dataset/test_statuses.csv', 'dataset/test_comments.csv', 'dataset/test_shares.csv', 'dataset/test_reactions.csv')
+    with open('dataset/friends.csv', 'r+', encoding='utf-8') as f:
+        content = re.sub(',(\d+),', r'#\1#', f.read())
+        content = re.sub(',', ';', content)
+        content = re.sub('#(\d+)#', r',\1,', content)
+        content = re.sub('person;number_of_friends;friends', 'person,number_of_friends,friends', content)
+        f.seek(0)
+        f.write(content)
     adjust_date_time('dataset/original_statuses.csv', 'dataset/original_comments.csv', 'dataset/original_shares.csv', 'dataset/original_reactions.csv')
