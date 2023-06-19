@@ -24,7 +24,7 @@ class StatusTrie:
 
 
     def add_status(self, status):
-        text = status['message'].lower()
+        text = status['message'].lower() + '\0' + status['author'].lower()
         node = self.root
         position = 0
         word = ''
@@ -32,18 +32,13 @@ class StatusTrie:
         for char in text:
             if char.isalnum():
                 word += char
-
-                if char in node.children:
-                    node = node.children[char]
-                else:
-                    node.children[char] = StatusTrieNode(char, word)
-                    node = node.children[char]
-
-                if status['id'] not in node.statuses:
-                    node.statuses[status['id']] = {'parts_count': 0, 'word_positions': []}
+                node = node.children.setdefault(char, StatusTrieNode(char, word))
+                node.statuses.setdefault(status['id'], {'parts_count': 0, 'word_positions': []})
                 node.statuses[status['id']]['parts_count'] += 1
             elif word:
                 node, position, word = self.__new_word_helper__(node, status['id'], position)
+            if char == '\0':
+                position += 1
 
         if node.char != '':
             self.__new_word_helper__(node, status['id'], position)

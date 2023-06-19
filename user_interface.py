@@ -169,7 +169,7 @@ def print_status(index, statuses, underline_words):
     link = (status["link"][:get_status_width() - 9] + (status["link"][get_status_width() - 9:] and "...")) if status["link"] == status["link"] else ''
     print_centered('<' + f'{index}/{len(statuses)}'.center(get_status_width() - 2) + '>')
     print_centered('-' * get_status_width(), end='\n\n\n')
-    print_centered(f'Publisher: {status["author"]}'.ljust(get_status_width()), end='\n')
+    print_centered('Publisher: ' + underline(status["author"], underline_words) + (' ' * (get_status_width() - len(status["author"]) - 11)), end='\n')
     print_centered(f'Published: {status["date"]}'.ljust(get_status_width()), end='\n\n')
     print_centered(f'Link: {link}'.ljust(get_status_width()), end='\n\n')
     line = 'Message: '
