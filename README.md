@@ -5,7 +5,7 @@ Serijalizovani graf dostupan [ovde](https://edgelord.moma.rs/)
 
 
 ## Korišćeni moduli
-- Za čitanje csv fajlova: `pip install pandas`  
+- Za parsiranje csv fajlova: `pip install pandas`  
 - Za matricu susedstva: `pip install numpy`  
 - Za non-blocking keyboard input: `pip install pynput`  
 
