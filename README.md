@@ -10,7 +10,7 @@ Serijalizovani graf dostupan [ovde](https://edgelord.moma.rs/)
 - Za non-blocking keyboard input: `pip install pynput`  
 
 
-## Upotreba aplikacije
+## Uputstvo za aplikaciju
 
 - Za navigaciju koristiti strelice i esc tastere
 - Za odabir opcije u meniju enter
