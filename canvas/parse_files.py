@@ -221,6 +221,6 @@ def adjust_friends(path):
 
 
 if __name__ == '__main__':
-    # adjust_date_time('dataset/test_statuses.csv', 'dataset/test_comments.csv', 'dataset/test_shares.csv', 'dataset/test_reactions.csv')
     adjust_friends('dataset/friends.csv')
     adjust_date_time('dataset/original_statuses.csv', 'dataset/original_comments.csv', 'dataset/original_shares.csv', 'dataset/original_reactions.csv')
+    # adjust_date_time('dataset/test_statuses.csv', 'dataset/test_comments.csv', 'dataset/test_shares.csv', 'dataset/test_reactions.csv')
