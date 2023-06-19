@@ -1,5 +1,6 @@
 from time_decay import get_time_decay
 from datetime import datetime
+import multiprocessing as mp
 from dataset_reader import *
 from logging import info
 import numpy as np
@@ -52,6 +53,25 @@ class AffinityGraph:
         info(f'✓  {"Affinity of friends friends:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
 
+    def __add_affinity_of_friends_friends_thread__(self, affinity_graph_original, users, friends):
+        tmp_adjacency_matrix = np.zeros((self.__nodes_count__, self.__nodes_count__), dtype=np.int32)
+        for user in users:
+            for friend in friends[user]:
+                for friend_of_friend in friends[friend]:
+                    tmp_adjacency_matrix[self.__name_to_index__[user]] += affinity_graph_original[self.__name_to_index__[friend_of_friend]] // self.__affinity_of_friends_friends_weight__
+        return tmp_adjacency_matrix
+
+
+    def __add_affinity_of_friends_friends_parallel__(self, affinity_graph_original, friends):
+        start_time = time.time()
+        info(f'█  {"Affinity of friends friends:".ljust(32)}{"...parallel".rjust(20)}')
+        parts = [(affinity_graph_original, users_part, friends) for users_part in np.array_split(list(friends.keys()), mp.cpu_count())]
+        results = mp.Pool(mp.cpu_count()).starmap(self.__add_affinity_of_friends_friends_thread__, parts)
+        for tmp_adjacency_matrix in results:
+            self.__adjacency_matrix__ += tmp_adjacency_matrix
+        info(f'✓  {"Affinity of friends friends:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
+
+
     def __add_action_affinity__(self, statuses, activites, activity_weight, activity_name="Activities"):
         start_time = time.time()
         activity_count = len(activites)
@@ -61,32 +81,49 @@ class AffinityGraph:
         info(f'✓  {(activity_name + ":").ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
 
+    def __add_action_affinity_thread__(self, statuses, activites, activity_weight):
+        tmp_adjacency_matrix = np.zeros((self.__nodes_count__, self.__nodes_count__), dtype=np.int32)
+        for activity in activites:
+            tmp_adjacency_matrix[self.__name_to_index__[activity['author']], self.__name_to_index__[statuses[activity['status']]['author']]] += activity_weight * get_time_decay(activity['date'], self.__current_date__)
+        return tmp_adjacency_matrix
+
+
+    def __add_action_affinity_parallel__(self, statuses, activites, activity_weight, activity_name="Activities"):
+        start_time = time.time()
+        info(f'█  {(activity_name + ":").ljust(32)}{"...parallel".rjust(20)}')
+        parts = [(statuses, activites_part, activity_weight) for activites_part in np.array_split(activites, mp.cpu_count())]
+        results =  mp.Pool(mp.cpu_count()).starmap(self.__add_action_affinity_thread__, parts)
+        for tmp_adjacency_matrix in results:
+            self.__adjacency_matrix__ += tmp_adjacency_matrix
+        info(f'✓  {(activity_name + ":").ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
+
+
     def generate_graph(self):
         self.__current_date__ = datetime.now()
 
         info('Loading data:\n')
 
-        info(f'█  Statuses')
+        info(f'█  {"Statuses:".ljust(32)}{"...loading".rjust(20)}')
         start_time = time.time()
         statuses = get_statuses()
         info(f'✓  {"Statuses:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
-        info(f'█  Friends')
+        info(f'█  {"Friends:".ljust(32)}{"...loading".rjust(20)}')
         start_time = time.time()
         self.__nodes_count__, self.__name_to_index__, friends = get_friends()
         info(f'✓  {"Friends:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
-        info(f'█  Comments')
+        info(f'█  {"Comments:".ljust(32)}{"...loading".rjust(20)}')
         start_time = time.time()
         comments = get_comments()
         info(f'✓  {"Comments:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
-        info(f'█  Reactions')
+        info(f'█  {"Reactions:".ljust(32)}{"...loading".rjust(20)}')
         start_time = time.time()
         reactions = get_reactions()
         info(f'✓  {"Reactions:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
-        info(f'█  Shares')
+        info(f'█  {"Shares:".ljust(32)}{"...loading".rjust(20)}')
         start_time = time.time()
         shares = get_shares()
         info(f'✓  {"Shares:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
@@ -96,14 +133,14 @@ class AffinityGraph:
         info('\nAdding affinity for:\n')
         self.__add_friend_affinity__(friends)
         self.__add_action_affinity__(statuses, comments, self.__comment_affinity_weight__, 'Comments')
-        self.__add_action_affinity__(statuses, reactions, self.__reaction_affinity_weight__, 'Reactions')
-        self.__add_action_affinity__(statuses, shares, self.__share_affinity_weight__, 'Shares')
+        self.__add_action_affinity_parallel__(statuses, reactions, self.__reaction_affinity_weight__, 'Reactions')
+        self.__add_action_affinity_parallel__(statuses, shares, self.__share_affinity_weight__, 'Shares')
 
         affinity_graph_original = self.__adjacency_matrix__.copy()
         self.__add_affinity_of_friends__(affinity_graph_original, friends)
 
-        # za uračunavanje i afiniteta prijatelja od prijatelja je potrebno ~50 minuta, a bez toga ~3 minuta za ceo original dataset
-        # self.add_affinity_of_friends_friends(affinity_graph_original, friends)
+        # za uračunavanje i afiniteta prijatelja od prijatelja je potrebno ~7 minuta, a bez toga ~58 sekundi za ceo original dataset
+        # self.__add_affinity_of_friends_friends_parallel__(affinity_graph_original, friends)
 
 
     def get_affinity(self, of_user, towards_user):
