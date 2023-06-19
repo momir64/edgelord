@@ -46,8 +46,9 @@ def underline_word(text, word):
     clean_word = re.sub(r'\s\s+', ' ', re.sub(r'[^\w\s]+', ' ', word)).strip().lower()
     while clean_text.find(clean_word, clean_position) != -1:
         clean_position = clean_text.find(clean_word, clean_position) + len(clean_word)
-        position = text.lower().find(word.lower().split()[0], position)
-        if is_enclosed(text[:position]):
+        tmp_position = text.lower().find(word.lower(), position)
+        if tmp_position != -1 and is_enclosed(text[:tmp_position]):
+            position = tmp_position
             text = text[:position] + STYLE_ON + text[position:get_position(text, word, position)] + STYLE_OFF + text[get_position(text, word, position):]
         position += len(STYLE_ON + word + STYLE_OFF)
     return text
