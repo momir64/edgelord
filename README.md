@@ -1,5 +1,10 @@
 # EdgeRank
 
+Projekat iz algoritama i strukutra podataka.  
+Serijalizovani graf dostupan [ovde](https://edgelord.moma.rs/)
+
+<br/>
+
 ## Korišćeni moduli
 
 ### Za čitanje csv fajlova:
@@ -33,7 +38,7 @@ pip install pynput
 
 ## Vreme potrebno za pravljenje grafa
 
-### Za original csv dataset na Intel i7-11700F (16 threads) procesoru:
+Za original csv dataset na Intel i7-11700F (16 threads) procesoru:
 
 <pre>
 Bez uračunavanja prijateljevih sklonosti:                 <b>43.6752s</b>
