@@ -215,7 +215,7 @@ def adjust_friends(path):
         content = re.sub(',(\d+),', r'#\1#', f.read())
         content = re.sub(',', ';', content)
         content = re.sub('#(\d+)#', r',\1,', content)
-        content = re.sub('person;number_of_friends;friends', 'person,number_of_friends,friends', content)
+        content = re.sub(';number_of_friends;', ',number_of_friends,', content)
         f.seek(0)
         f.write(content)
 
