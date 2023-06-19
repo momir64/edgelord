@@ -67,8 +67,7 @@ class AffinityGraph:
         info(f'█  {"Affinity of friends friends:".ljust(32)}{"...parallel".rjust(20)}')
         parts = [(affinity_graph_original, users_part, friends) for users_part in np.array_split(list(friends.keys()), mp.cpu_count())]
         results = mp.Pool(mp.cpu_count()).starmap(self.__add_affinity_of_friends_friends_thread__, parts)
-        for tmp_adjacency_matrix in results:
-            self.__adjacency_matrix__ += tmp_adjacency_matrix
+        self.__adjacency_matrix__ += np.sum(results, 0)
         info(f'✓  {"Affinity of friends friends:".ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
 
@@ -93,8 +92,7 @@ class AffinityGraph:
         info(f'█  {(activity_name + ":").ljust(32)}{"...parallel".rjust(20)}')
         parts = [(statuses, activites_part, activity_weight) for activites_part in np.array_split(activites, mp.cpu_count())]
         results =  mp.Pool(mp.cpu_count()).starmap(self.__add_action_affinity_thread__, parts)
-        for tmp_adjacency_matrix in results:
-            self.__adjacency_matrix__ += tmp_adjacency_matrix
+        self.__adjacency_matrix__ += np.sum(results, 0)
         info(f'✓  {(activity_name + ":").ljust(32)}{("%.4f seconds" % (time.time() - start_time)).rjust(20)}\033[K\n')
 
 
