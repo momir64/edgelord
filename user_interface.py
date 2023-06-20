@@ -37,7 +37,7 @@ def is_enclosed(text):
     return text.count(STYLE_ON) <= text.count(STYLE_OFF)
 
 def get_position(text, word, position):
-    return position + len(word) + len([c for c in text[position:text.lower().find(word.lower().split()[-1])] if not c.isalnum() and c != ' '])
+    return position + len(word) + len([c for c in text[position:text.lower().find(word.lower().split()[-1])] if not c.isalnum()]) - len([c for c in word if not c.isalnum()])
 
 def underline_word(text, word):
     position = 0
@@ -45,12 +45,12 @@ def underline_word(text, word):
     clean_text = re.sub(r'\s\s+', ' ', re.sub(r'[^\w\s]+', ' ', text)).strip().lower()
     clean_word = re.sub(r'\s\s+', ' ', re.sub(r'[^\w\s]+', ' ', word)).strip().lower()
     while clean_text.find(clean_word, clean_position) != -1:
-        clean_position = clean_text.find(clean_word, clean_position) + len(clean_word)
-        tmp_position = text.lower().find(word.lower(), position)
-        if tmp_position != -1 and is_enclosed(text[:tmp_position]):
-            position = tmp_position
+        clean_position = clean_text.find(clean_word, clean_position)
+        position = text.lower().find(word.lower().split()[0], max(position, clean_position))
+        if is_enclosed(text[:position]):
             text = text[:position] + STYLE_ON + text[position:get_position(text, word, position)] + STYLE_OFF + text[get_position(text, word, position):]
         position += len(STYLE_ON + word + STYLE_OFF)
+        clean_position += len(clean_word)
     return text
 
 def underline(text, words):
